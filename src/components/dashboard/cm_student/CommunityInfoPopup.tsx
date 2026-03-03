@@ -55,7 +55,6 @@ const CommunityInfoPopup = ({ onClose }: CommunityInfoPopupProps) => {
     }
   };
 
-  // BURASI DEĞİŞTİ: Artık FormData ile dosya yolluyoruz
   const handleSave = async () => {
     if (!community.id) return;
     setSaving(true);
@@ -69,14 +68,13 @@ const CommunityInfoPopup = ({ onClose }: CommunityInfoPopupProps) => {
 
       const res = await fetch("/api/cm_student/community", {
         method: "PUT",
-        // DİKKAT: Content-Type header'ı EKLENMEMELİDİR. Fetch API, FormData'yı algılayıp boundary'leri kendi ayarlar.
         body: formData,
       });
 
       const data = await res.json();
       if (data.success) {
         alert(data.message);
-        onClose(); // İşlem bitince kapatıyoruz. Sayfa yenilendiğinde (veya liste sayfasında) yeni logo görünecek.
+        onClose();
       } else {
         alert("Hata: " + data.message);
       }
@@ -89,28 +87,29 @@ const CommunityInfoPopup = ({ onClose }: CommunityInfoPopupProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative flex flex-col animate-in zoom-in-95 duration-200 overflow-hidden">
-        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 md:p-4">
+      <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl w-full max-w-lg relative flex flex-col animate-in zoom-in-95 duration-200 overflow-hidden max-h-[95vh] md:max-h-[90vh]">
+        
+        <div className="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 shrink-0">
           <div>
-            <h3 className="text-xl font-bold text-(--color-lumex-dark)">
+            <h3 className="text-lg md:text-xl font-bold text-(--color-lumex-dark)">
               Topluluk Bilgileri
             </h3>
-            <p className="text-sm text-(--color-lumex-dark-muted)">
+            <p className="text-[10px] md:text-sm text-(--color-lumex-dark-muted) mt-0.5 md:mt-1">
               Topluluğunuzun temel bilgilerini görüntüleyin ve güncelleyin.
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-(--color-lumex-dark) transition-colors bg-white hover:bg-gray-100 p-2 rounded-full cursor-pointer shadow-sm"
+            className="text-gray-400 hover:text-(--color-lumex-dark) transition-colors bg-white hover:bg-gray-100 p-1.5 md:p-2 rounded-full cursor-pointer shadow-sm shrink-0 ml-2"
           >
-            <X size={20} />
+            <X size={18} className="md:w-5 md:h-5" />
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-4 md:p-6 space-y-4 md:space-y-6 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 md:[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-200">
           <div className="flex flex-col items-center justify-center">
-            <div className="w-24 h-24 bg-(--color-lumex-purple-light)/10 text-(--color-lumex-purple-main) flex items-center justify-center rounded-2xl mb-3 shadow-inner border-2 border-dashed border-(--color-lumex-purple-light)/30 overflow-hidden relative">
+            <div className="w-20 h-20 md:w-24 md:h-24 bg-(--color-lumex-purple-light)/10 text-(--color-lumex-purple-main) flex items-center justify-center rounded-xl md:rounded-2xl mb-2 md:mb-3 shadow-inner border-2 border-dashed border-(--color-lumex-purple-light)/30 overflow-hidden relative">
               {previewUrl ? (
                 <img
                   src={previewUrl}
@@ -124,7 +123,7 @@ const CommunityInfoPopup = ({ onClose }: CommunityInfoPopupProps) => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <ImageIcon size={32} />
+                <ImageIcon size={24} className="md:w-8 md:h-8" />
               )}
             </div>
 
@@ -138,58 +137,58 @@ const CommunityInfoPopup = ({ onClose }: CommunityInfoPopupProps) => {
 
             <button
               onClick={handleLogoClick}
-              className="text-sm font-semibold text-(--color-lumex-purple-main) hover:text-(--color-lumex-purple-deep) transition-colors cursor-pointer"
+              className="text-xs md:text-sm font-semibold text-(--color-lumex-purple-main) hover:text-(--color-lumex-purple-deep) transition-colors cursor-pointer p-1"
             >
               Logoyu Değiştir
             </button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1 ml-1">
+              <label className="block text-[10px] md:text-xs font-semibold text-gray-500 mb-0.5 md:mb-1 ml-1">
                 Topluluk Adı
               </label>
               <input
                 type="text"
                 value={community.name}
                 readOnly
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-600 cursor-not-allowed focus:outline-none text-sm font-bold"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg md:rounded-xl px-3 md:px-4 py-2 md:py-2.5 text-gray-600 cursor-not-allowed focus:outline-none text-xs md:text-sm font-bold"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1 ml-1">
+              <label className="block text-[10px] md:text-xs font-semibold text-gray-500 mb-0.5 md:mb-1 ml-1">
                 Topluluk Açıklaması
               </label>
               <textarea
-                rows={4}
+                rows={5}
                 value={community.description}
                 onChange={(e) =>
                   setCommunity({ ...community, description: e.target.value })
                 }
                 disabled={loading}
-                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-(--color-lumex-dark) focus:outline-none focus:ring-2 focus:ring-(--color-lumex-purple-main) transition-all text-sm resize-none"
+                className="w-full bg-white border border-gray-200 rounded-lg md:rounded-xl px-3 md:px-4 py-2.5 md:py-3 text-(--color-lumex-dark) focus:outline-none focus:ring-1 md:focus:ring-2 focus:ring-(--color-lumex-purple-main) transition-all text-xs md:text-sm resize-none"
               ></textarea>
             </div>
           </div>
         </div>
 
-        <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex justify-end gap-3">
+        <div className="p-4 md:p-6 bg-gray-50/50 border-t border-gray-100 flex flex-col sm:flex-row justify-end gap-2 md:gap-3 shrink-0 rounded-b-xl md:rounded-b-2xl">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 font-semibold rounded-xl hover:bg-gray-50 transition-colors text-sm cursor-pointer"
+            className="w-full sm:w-auto px-4 md:px-5 py-2 md:py-2.5 bg-white border border-gray-200 text-gray-600 font-semibold rounded-lg md:rounded-xl hover:bg-gray-50 transition-colors text-xs md:text-sm cursor-pointer order-last sm:order-first"
           >
             İptal
           </button>
           <button
             onClick={handleSave}
             disabled={saving || loading}
-            className="px-5 py-2.5 bg-[#0a192f] text-white font-semibold rounded-xl hover:bg-[#112240] transition-colors flex items-center gap-2 text-sm shadow-md cursor-pointer disabled:opacity-50"
+            className="w-full sm:w-auto px-4 md:px-5 py-2 md:py-2.5 bg-[#0a192f] text-white font-semibold rounded-lg md:rounded-xl hover:bg-[#112240] transition-colors flex items-center justify-center gap-1.5 md:gap-2 text-xs md:text-sm shadow-md cursor-pointer disabled:opacity-50"
           >
             {saving ? (
               "Kaydediliyor..."
             ) : (
               <>
-                <Save size={16} /> Değişiklikleri Kaydet
+                <Save size={14} className="md:w-4 md:h-4" /> Değişiklikleri Kaydet
               </>
             )}
           </button>

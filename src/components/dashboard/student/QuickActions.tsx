@@ -10,37 +10,32 @@ const QuickActions = () => {
 
     return (
         <>
-            <div className="w-full flex flex-wrap md:flex-nowrap gap-4 mb-8">
+            <div className="w-full flex flex-col sm:flex-row gap-3 md:gap-4 mb-6 md:mb-8">
                 
-                {/* TOPLULUKLARI KEŞFET */}
-                <Link href="/societies" className="flex-1">
-                    <button className="w-full bg-(--color-lumex-dark) text-white flex items-center justify-center rounded-xl px-4 py-3 cursor-pointer hover:bg-black transition duration-200 shadow-md font-semibold text-sm gap-2">
-                        <Users size={18} className="text-(--color-lumex-accent)" /> 
+                <Link href="/societies" className="w-full sm:flex-1">
+                    <button className="w-full bg-(--color-lumex-dark) text-white flex items-center justify-center rounded-lg md:rounded-xl px-4 py-2.5 md:py-3 cursor-pointer hover:bg-black transition duration-200 shadow-md font-semibold text-xs md:text-sm gap-2">
+                        <Users size={16} className="text-(--color-lumex-accent) md:w-4.5 md:h-4.5" /> 
                         Toplulukları Keşfet
                     </button>
                 </Link>
 
-                {/* PROFİLİMİ DÜZENLE */}
                 <button 
                     onClick={() => setIsProfileOpen(true)}
-                    className="flex-1 bg-white text-(--color-lumex-dark) border border-gray-200 flex items-center justify-center rounded-xl px-4 py-3 cursor-pointer hover:bg-gray-50 transition duration-200 shadow-sm font-semibold text-sm gap-2"
+                    className="w-full sm:flex-1 bg-white text-(--color-lumex-dark) border border-gray-200 flex items-center justify-center rounded-lg md:rounded-xl px-4 py-2.5 md:py-3 cursor-pointer hover:bg-gray-50 transition duration-200 shadow-sm font-semibold text-xs md:text-sm gap-2"
                 >
-                    <UserCog size={18} className="text-(--color-lumex-purple-main)" /> 
+                    <UserCog size={16} className="text-(--color-lumex-purple-main) md:w-4.5 md:h-4.5" /> 
                     Profilimi Düzenle
                 </button>
 
-                {/* TÜM ETKİNLİKLER */}
-                {/* Not: Etkinlikler (duyurular) sayfasının yolu /announcements ise href'i ona göre güncelle */}
-                <Link href="/announcements" className="flex-1">
-                    <button className="w-full bg-white text-(--color-lumex-dark) border border-gray-200 flex items-center justify-center rounded-xl px-4 py-3 cursor-pointer hover:bg-gray-50 transition duration-200 shadow-sm font-semibold text-sm gap-2">
-                        <CalendarRange size={18} className="text-emerald-600" /> 
+                <Link href="/announcements" className="w-full sm:flex-1">
+                    <button className="w-full bg-white text-(--color-lumex-dark) border border-gray-200 flex items-center justify-center rounded-lg md:rounded-xl px-4 py-2.5 md:py-3 cursor-pointer hover:bg-gray-50 transition duration-200 shadow-sm font-semibold text-xs md:text-sm gap-2">
+                        <CalendarRange size={16} className="text-emerald-600 md:w-4.5 md:h-4.5" /> 
                         Tüm Etkinlikler
                     </button>
                 </Link>
 
             </div>
 
-            {/* POPUP RENDER EDİLİR */}
             {isProfileOpen && <ProfileEditPopup onClose={() => setIsProfileOpen(false)} />}
         </>
     );

@@ -8,7 +8,6 @@ interface ProfileEditPopupProps {
 }
 
 const ProfileEditPopup = ({ onClose }: ProfileEditPopupProps) => {
-    // Profil bilgileri için state (student_number -> department olarak güncellendi)
     const [profileData, setProfileData] = useState({
         full_name: "",
         department: "",
@@ -17,7 +16,6 @@ const ProfileEditPopup = ({ onClose }: ProfileEditPopupProps) => {
     const [userId, setUserId] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Şifre değiştirme form stateleri
     const [passData, setPassData] = useState({
         currentPass: "",
         newPass: "",
@@ -25,7 +23,6 @@ const ProfileEditPopup = ({ onClose }: ProfileEditPopupProps) => {
     });
     const [submitLoading, setSubmitLoading] = useState(false);
 
-    // Profil bilgilerini çek
     useEffect(() => {
         const fetchProfile = async () => {
             const storedUser = localStorage.getItem('user');
@@ -48,7 +45,7 @@ const ProfileEditPopup = ({ onClose }: ProfileEditPopupProps) => {
                         }
                     }
                 } catch (error) {
-                    console.error("Profil bilgileri alınamadı:", error);
+                    console.error(error);
                 }
             }
             setLoading(false);
@@ -61,11 +58,9 @@ const ProfileEditPopup = ({ onClose }: ProfileEditPopupProps) => {
         setPassData({ ...passData, [e.target.name]: e.target.value });
     };
 
-    // Şifre Güncelleme İşlemi
     const handleSubmit = async () => {
         if (!userId) return;
 
-        // Validasyonlar
         if (!passData.currentPass || !passData.newPass || !passData.confirmPass) {
             alert("Lütfen tüm şifre alanlarını doldurun.");
             return;
@@ -96,12 +91,12 @@ const ProfileEditPopup = ({ onClose }: ProfileEditPopupProps) => {
 
             if (data.success) {
                 alert(data.message);
-                onClose(); // İşlem başarılıysa popup'ı kapat
+                onClose();
             } else {
                 alert("Hata: " + data.message);
             }
         } catch (error) {
-            console.error("Şifre güncelleme hatası:", error);
+            console.error(error);
             alert("Bir hata oluştu, lütfen tekrar deneyin.");
         } finally {
             setSubmitLoading(false);
@@ -114,22 +109,20 @@ const ProfileEditPopup = ({ onClose }: ProfileEditPopupProps) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative flex flex-col animate-in zoom-in-95 duration-200 overflow-hidden">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 md:p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative flex flex-col animate-in zoom-in-95 duration-200 overflow-hidden max-h-[90vh]">
                 
-                {/* HEADER */}
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <div className="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 shrink-0">
                     <div>
-                        <h3 className="text-xl font-bold text-(--color-lumex-dark)">Profilimi Düzenle</h3>
-                        <p className="text-sm text-(--color-lumex-dark-muted)">Kişisel bilgilerinizi ve şifrenizi yönetin.</p>
+                        <h3 className="text-lg md:text-xl font-bold text-(--color-lumex-dark)">Profilimi Düzenle</h3>
+                        <p className="text-xs md:text-sm text-(--color-lumex-dark-muted) mt-0.5 md:mt-1">Kişisel bilgilerinizi ve şifrenizi yönetin.</p>
                     </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-(--color-lumex-dark) transition-colors bg-white hover:bg-gray-100 p-2 rounded-full cursor-pointer shadow-sm">
-                        <X size={20} />
+                    <button onClick={onClose} className="text-gray-400 hover:text-(--color-lumex-dark) transition-colors bg-white hover:bg-gray-100 p-1.5 md:p-2 rounded-full cursor-pointer shadow-sm">
+                        <X size={18} className="md:w-5 md:h-5" />
                     </button>
                 </div>
 
-                {/* CONTENT */}
-                <div className="p-6 overflow-y-auto max-h-[70vh] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
+                <div className="p-4 md:p-6 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
                     
                     {loading ? (
                         <div className="flex items-center justify-center py-10">
@@ -137,81 +130,76 @@ const ProfileEditPopup = ({ onClose }: ProfileEditPopupProps) => {
                         </div>
                     ) : (
                         <>
-                            {/* AVATAR */}
-                            <div className="flex flex-col items-center justify-center mb-6">
-                                <div className="w-20 h-20 bg-(--color-lumex-purple-main) text-white flex items-center justify-center rounded-full font-bold text-2xl mb-3 shadow-md border-4 border-(--color-lumex-purple-light)/20">
+                            <div className="flex flex-col items-center justify-center mb-5 md:mb-6">
+                                <div className="w-16 h-16 md:w-20 md:h-20 bg-(--color-lumex-purple-main) text-white flex items-center justify-center rounded-full font-bold text-xl md:text-2xl mb-2 md:mb-3 shadow-md border-3 md:border-4 border-(--color-lumex-purple-light)/20">
                                     {getInitials(profileData.full_name)}
                                 </div>
                             </div>
 
-                            {/* KİŞİSEL BİLGİLER (READ-ONLY) */}
-                            <div className="mb-8 space-y-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <User size={16} className="text-(--color-lumex-purple-main)" />
-                                    <h4 className="font-semibold text-(--color-lumex-dark) text-sm">Kişisel Bilgiler (Salt Okunur)</h4>
+                            <div className="mb-6 md:mb-8 space-y-3 md:space-y-4">
+                                <div className="flex items-center gap-1.5 md:gap-2 mb-1.5 md:mb-2">
+                                    <User size={14} className="text-(--color-lumex-purple-main) md:w-4 md:h-4" />
+                                    <h4 className="font-semibold text-(--color-lumex-dark) text-xs md:text-sm">Kişisel Bilgiler (Salt Okunur)</h4>
                                 </div>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                                     <div>
-                                        <label className="text-xs font-semibold text-gray-500 mb-1 ml-1">Ad Soyad</label>
-                                        <input type="text" value={profileData.full_name} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-600 cursor-not-allowed focus:outline-none text-sm font-medium" />
+                                        <label className="text-[10px] md:text-xs font-semibold text-gray-500 mb-1 ml-1">Ad Soyad</label>
+                                        <input type="text" value={profileData.full_name} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-lg md:rounded-xl px-3 md:px-4 py-2 md:py-2.5 text-gray-600 cursor-not-allowed focus:outline-none text-xs md:text-sm font-medium" />
                                     </div>
                                     <div>
-                                        {/* Öğrenci No Yerine Bölüm Bilgisi Eklendi */}
-                                        <label className="text-xs font-semibold text-gray-500 mb-1 ml-1">Bölüm</label>
-                                        <input type="text" value={profileData.department} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-600 cursor-not-allowed focus:outline-none text-sm font-medium truncate" />
+                                        <label className="text-[10px] md:text-xs font-semibold text-gray-500 mb-1 ml-1">Bölüm</label>
+                                        <input type="text" value={profileData.department} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-lg md:rounded-xl px-3 md:px-4 py-2 md:py-2.5 text-gray-600 cursor-not-allowed focus:outline-none text-xs md:text-sm font-medium truncate" />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 ml-1 flex items-center gap-1">
-                                        <Mail size={12} /> E-Posta
+                                    <label className="text-[10px] md:text-xs font-semibold text-gray-500 mb-1 ml-1 flex items-center gap-1">
+                                        <Mail size={10} className="md:w-3 md:h-3" /> E-Posta
                                     </label>
-                                    <input type="text" value={profileData.email} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-600 cursor-not-allowed focus:outline-none text-sm font-medium" />
+                                    <input type="text" value={profileData.email} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-lg md:rounded-xl px-3 md:px-4 py-2 md:py-2.5 text-gray-600 cursor-not-allowed focus:outline-none text-xs md:text-sm font-medium" />
                                 </div>
                             </div>
 
-                            <hr className="border-gray-100 mb-6" />
+                            <hr className="border-gray-100 mb-5 md:mb-6" />
 
-                            {/* ŞİFRE DEĞİŞTİRME */}
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Lock size={16} className="text-(--color-lumex-accent)" />
-                                    <h4 className="font-semibold text-(--color-lumex-dark) text-sm">Şifre Değiştir</h4>
+                            <div className="space-y-3 md:space-y-4">
+                                <div className="flex items-center gap-1.5 md:gap-2 mb-1.5 md:mb-2">
+                                    <Lock size={14} className="text-(--color-lumex-accent) md:w-4 md:h-4" />
+                                    <h4 className="font-semibold text-(--color-lumex-dark) text-xs md:text-sm">Şifre Değiştir</h4>
                                 </div>
 
                                 <div>
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 ml-1 flex items-center gap-1">
-                                        <KeyRound size={12} /> Mevcut Şifre
+                                    <label className="text-[10px] md:text-xs font-semibold text-gray-500 mb-1 ml-1 flex items-center gap-1">
+                                        <KeyRound size={10} className="md:w-3 md:h-3" /> Mevcut Şifre
                                     </label>
-                                    <input type="password" name="currentPass" value={passData.currentPass} onChange={handlePassChange} placeholder="••••••••" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-(--color-lumex-dark) focus:outline-none focus:ring-2 focus:ring-(--color-lumex-purple-main) transition-all text-sm" />
+                                    <input type="password" name="currentPass" value={passData.currentPass} onChange={handlePassChange} placeholder="••••••••" className="w-full bg-white border border-gray-200 rounded-lg md:rounded-xl px-3 md:px-4 py-2 md:py-2.5 text-(--color-lumex-dark) focus:outline-none focus:ring-2 focus:ring-(--color-lumex-purple-main) transition-all text-xs md:text-sm" />
                                 </div>
                                 <div>
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 ml-1 flex items-center gap-1">
-                                        <KeyRound size={12} /> Yeni Şifre
+                                    <label className="text-[10px] md:text-xs font-semibold text-gray-500 mb-1 ml-1 flex items-center gap-1">
+                                        <KeyRound size={10} className="md:w-3 md:h-3" /> Yeni Şifre
                                     </label>
-                                    <input type="password" name="newPass" value={passData.newPass} onChange={handlePassChange} placeholder="••••••••" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-(--color-lumex-dark) focus:outline-none focus:ring-2 focus:ring-(--color-lumex-purple-main) transition-all text-sm" />
+                                    <input type="password" name="newPass" value={passData.newPass} onChange={handlePassChange} placeholder="••••••••" className="w-full bg-white border border-gray-200 rounded-lg md:rounded-xl px-3 md:px-4 py-2 md:py-2.5 text-(--color-lumex-dark) focus:outline-none focus:ring-2 focus:ring-(--color-lumex-purple-main) transition-all text-xs md:text-sm" />
                                 </div>
                                 <div>
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 ml-1 flex items-center gap-1">
-                                        <KeyRound size={12} /> Yeni Şifre (Tekrar)
+                                    <label className="text-[10px] md:text-xs font-semibold text-gray-500 mb-1 ml-1 flex items-center gap-1">
+                                        <KeyRound size={10} className="md:w-3 md:h-3" /> Yeni Şifre (Tekrar)
                                     </label>
-                                    <input type="password" name="confirmPass" value={passData.confirmPass} onChange={handlePassChange} placeholder="••••••••" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-(--color-lumex-dark) focus:outline-none focus:ring-2 focus:ring-(--color-lumex-purple-main) transition-all text-sm" />
+                                    <input type="password" name="confirmPass" value={passData.confirmPass} onChange={handlePassChange} placeholder="••••••••" className="w-full bg-white border border-gray-200 rounded-lg md:rounded-xl px-3 md:px-4 py-2 md:py-2.5 text-(--color-lumex-dark) focus:outline-none focus:ring-2 focus:ring-(--color-lumex-purple-main) transition-all text-xs md:text-sm" />
                                 </div>
                             </div>
                         </>
                     )}
                 </div>
 
-                {/* FOOTER */}
-                <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex justify-end gap-3">
-                    <button onClick={onClose} disabled={submitLoading} className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 font-semibold rounded-xl hover:bg-gray-50 transition-colors text-sm cursor-pointer disabled:opacity-50">
+                <div className="p-4 md:p-6 bg-gray-50/50 border-t border-gray-100 flex flex-col sm:flex-row justify-end gap-2 md:gap-3 shrink-0">
+                    <button onClick={onClose} disabled={submitLoading} className="w-full sm:w-auto px-4 md:px-5 py-2 md:py-2.5 bg-white border border-gray-200 text-gray-600 font-semibold rounded-lg md:rounded-xl hover:bg-gray-50 transition-colors text-xs md:text-sm cursor-pointer disabled:opacity-50 order-last sm:order-first">
                         İptal
                     </button>
-                    <button onClick={handleSubmit} disabled={submitLoading || loading} className="px-5 py-2.5 bg-(--color-lumex-purple-main) text-white font-semibold rounded-xl hover:bg-(--color-lumex-purple-deep) transition-colors flex items-center gap-2 text-sm shadow-md cursor-pointer disabled:opacity-50">
+                    <button onClick={handleSubmit} disabled={submitLoading || loading} className="w-full sm:w-auto flex justify-center px-4 md:px-5 py-2 md:py-2.5 bg-(--color-lumex-purple-main) text-white font-semibold rounded-lg md:rounded-xl hover:bg-(--color-lumex-purple-deep) transition-colors items-center gap-2 text-xs md:text-sm shadow-md cursor-pointer disabled:opacity-50">
                         {submitLoading ? (
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         ) : (
-                            <Save size={16} />
+                            <Save size={16} className="md:w-4 md:h-4" />
                         )}
                         Şifreyi Güncelle
                     </button>

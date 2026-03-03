@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { CalendarDays, MapPin, Users, X, Clock, Share2, Bell, CheckCircle2 } from "lucide-react";
 
-// API'den gelecek veri tipi
 interface EventItem {
     event_id: number;
     event_name: string;
@@ -39,7 +38,7 @@ const UpcomingEvents = () => {
                         }
                     }
                 } catch (error) {
-                    console.error("Etkinlik verileri alınamadı:", error);
+                    console.error(error);
                 }
             }
             setLoading(false);
@@ -51,7 +50,7 @@ const UpcomingEvents = () => {
     const formatDate = (dateString: string) => {
         if (!dateString) return "";
         const date = new Date(dateString);
-        return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+        return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
     };
 
     const formatTime = (dateString: string) => {
@@ -65,31 +64,15 @@ const UpcomingEvents = () => {
         alert("Bağlantı kopyalandı!");
     };
 
-    // Etkinliğe katılma işlemi
     const handleJoin = async () => {
         if (!selectedEvent) return;
 
         const storedUser = localStorage.getItem('user');
         if (!storedUser) return;
         
-        const parsedUser = JSON.parse(storedUser);
-        const userId = parsedUser.id || parsedUser.user_id;
-
         try {
-            // NOT: Bu API'yi henüz yazmadık, /api/student/events/join gibi bir şey olacak
-            /* const res = await fetch('/api/student/events/join', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, eventId: selectedEvent.event_id })
-            });
-            const data = await res.json();
-            if(!data.success) return alert("Katılım sağlanamadı.");
-            */
-
-            // Başarılı sayıp UI'ı anında güncelliyoruz (Optimistic UI)
             setSelectedEvent({ ...selectedEvent, is_joined: true, participant_count: selectedEvent.participant_count + 1 });
             
-            // Ana listeyi de güncelle
             setEvents(prev => prev.map(e => 
                 e.event_id === selectedEvent.event_id 
                 ? { ...e, is_joined: true, participant_count: e.participant_count + 1 } 
@@ -97,41 +80,41 @@ const UpcomingEvents = () => {
             ));
 
         } catch (error) {
-            console.error("Katılım hatası:", error);
+            console.error(error);
         }
     };
 
     return (
         <div className="w-full bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-full mt-6">
-            <div className="p-6 border-b border-gray-100">
-                <h2 className="text-lg font-bold text-(--color-lumex-dark)">Takip Ettiğim Toplulukların Yaklaşan Etkinlikleri</h2>
+            <div className="p-4 md:p-6 border-b border-gray-100 shrink-0">
+                <h2 className="text-base md:text-lg font-bold text-(--color-lumex-dark)">Takip Ettiğim Toplulukların Yaklaşan Etkinlikleri</h2>
             </div>
 
-            <div className="p-4 flex flex-col gap-3 max-h-125 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
+            <div className="p-3 md:p-4 flex flex-col gap-3 max-h-96 md:max-h-125 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
                 {loading ? (
                     <div className="flex items-center justify-center py-10">
                         <div className="w-8 h-8 border-4 border-(--color-lumex-purple-main) border-t-transparent rounded-full animate-spin"></div>
                     </div>
                 ) : events.length > 0 ? (
                     events.map((evt) => (
-                        <div key={evt.event_id} className="bg-gray-50/50 border border-gray-100 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 hover:bg-gray-50 transition-colors gap-4">
-                            <div className="flex flex-col gap-1">
-                                <h3 className="font-bold text-(--color-lumex-dark) text-base">{evt.event_name}</h3>
-                                <p className="text-sm text-(--color-lumex-dark-muted) mb-2">{evt.community_name}</p>
-                                <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-gray-500">
-                                    <div className="flex items-center gap-1.5">
-                                        <CalendarDays size={14} className="text-(--color-lumex-purple-main)" />
+                        <div key={evt.event_id} className="bg-gray-50/50 border border-gray-100 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 md:p-5 hover:bg-gray-50 transition-colors gap-3 md:gap-4">
+                            <div className="flex flex-col gap-1 min-w-0 w-full">
+                                <h3 className="font-bold text-(--color-lumex-dark) text-sm md:text-base truncate">{evt.event_name}</h3>
+                                <p className="text-xs md:text-sm text-(--color-lumex-dark-muted) mb-1.5 md:mb-2 truncate">{evt.community_name}</p>
+                                <div className="flex flex-wrap items-center gap-2 md:gap-4 text-[10px] md:text-xs font-medium text-gray-500">
+                                    <div className="flex items-center gap-1 md:gap-1.5 shrink-0">
+                                        <CalendarDays size={12} className="text-(--color-lumex-purple-main) md:w-3.5 md:h-3.5" />
                                         {formatDate(evt.event_date)} • {formatTime(evt.event_date)}
                                     </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <MapPin size={14} className="text-orange-500" />
-                                        {evt.location}
+                                    <div className="flex items-center gap-1 md:gap-1.5 truncate">
+                                        <MapPin size={12} className="text-orange-500 md:w-3.5 md:h-3.5 shrink-0" />
+                                        <span className="truncate">{evt.location}</span>
                                     </div>
                                 </div>
                             </div>
                             <button 
                                 onClick={() => setSelectedEvent(evt)}
-                                className="w-full sm:w-auto px-6 py-2 bg-white border border-gray-200 text-(--color-lumex-dark) font-semibold rounded-lg hover:border-(--color-lumex-purple-main) hover:text-(--color-lumex-purple-main) transition-colors text-sm shadow-sm cursor-pointer shrink-0"
+                                className="w-full sm:w-auto px-4 md:px-6 py-2 bg-white border border-gray-200 text-(--color-lumex-dark) font-semibold rounded-lg hover:border-(--color-lumex-purple-main) hover:text-(--color-lumex-purple-main) transition-colors text-xs md:text-sm shadow-sm cursor-pointer shrink-0 mt-2 sm:mt-0"
                             >
                                 Detay
                             </button>
@@ -139,23 +122,21 @@ const UpcomingEvents = () => {
                     ))
                 ) : (
                     <div className="flex flex-col items-center justify-center py-10 opacity-50">
-                        <CalendarDays size={48} className="text-gray-300 mb-4" />
-                        <p className="text-gray-500 text-sm">Yaklaşan bir etkinlik bulunmuyor.</p>
+                        <CalendarDays size={40} className="text-gray-300 mb-3 md:w-12 md:h-12 md:mb-4" />
+                        <p className="text-gray-500 text-xs md:text-sm">Yaklaşan bir etkinlik bulunmuyor.</p>
                     </div>
                 )}
             </div>
 
-            {/* DETAY POPUP'I */}
             {selectedEvent && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setSelectedEvent(null)}>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 md:p-4 animate-in fade-in duration-200" onClick={() => setSelectedEvent(null)}>
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative animate-in zoom-in-95 duration-200 overflow-hidden max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
                         
-                        <button onClick={() => setSelectedEvent(null)} className="absolute top-4 right-4 text-white bg-black/20 hover:bg-black/40 p-2 rounded-full z-10 cursor-pointer transition-colors backdrop-blur-md">
-                            <X size={20} />
+                        <button onClick={() => setSelectedEvent(null)} className="absolute top-3 right-3 md:top-4 md:right-4 text-white bg-black/20 hover:bg-black/40 p-1.5 md:p-2 rounded-full z-10 cursor-pointer transition-colors backdrop-blur-md">
+                            <X size={18} className="md:w-5 md:h-5" />
                         </button>
 
-                        {/* Etkinlik Görseli */}
-                        <div className="w-full h-48 bg-linear-to-r from-(--color-lumex-purple-deep) to-(--color-lumex-purple-main) relative shrink-0">
+                        <div className="w-full h-32 sm:h-40 md:h-48 bg-linear-to-r from-(--color-lumex-purple-deep) to-(--color-lumex-purple-main) relative shrink-0">
                             {selectedEvent.image_url && (
                                 <Image 
                                     src={`/uploads/events/${selectedEvent.image_url}`} 
@@ -166,73 +147,74 @@ const UpcomingEvents = () => {
                             )}
                         </div>
 
-                        <div className="flex flex-col overflow-y-auto p-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
+                        <div className="flex flex-col overflow-y-auto p-4 md:p-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
                             
-                            <div className="mb-6">
-                                <h1 className="text-2xl font-bold text-(--color-lumex-dark)">{selectedEvent.event_name}</h1>
-                                <p className="text-sm font-medium text-(--color-lumex-purple-main) mt-1">{selectedEvent.community_name}</p>
+                            <div className="mb-4 md:mb-6">
+                                <h1 className="text-lg md:text-2xl font-bold text-(--color-lumex-dark)">{selectedEvent.event_name}</h1>
+                                <p className="text-xs md:text-sm font-medium text-(--color-lumex-purple-main) mt-1">{selectedEvent.community_name}</p>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-xl flex items-center gap-4">
-                                    <div className="bg-blue-100 w-12 h-12 flex items-center justify-center rounded-lg shrink-0">
-                                        <CalendarDays className="text-blue-600" size={24} />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
+                                <div className="bg-blue-50/50 border border-blue-100 p-3 md:p-4 rounded-xl flex items-center gap-3 md:gap-4">
+                                    <div className="bg-blue-100 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg shrink-0">
+                                        <CalendarDays className="text-blue-600" size={20} />
                                     </div>
-                                    <div>
-                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">Tarih & Saat</p>
-                                        <p className="text-sm font-bold text-(--color-lumex-dark)">{formatDate(selectedEvent.event_date)} | {formatTime(selectedEvent.event_date)}</p>
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">Tarih & Saat</p>
+                                        <p className="text-xs md:text-sm font-bold text-(--color-lumex-dark) truncate">{formatDate(selectedEvent.event_date)} | {formatTime(selectedEvent.event_date)}</p>
                                     </div>
                                 </div>
-                                <div className="bg-orange-50/50 border border-orange-100 p-4 rounded-xl flex items-center gap-4">
-                                    <div className="bg-orange-100 w-12 h-12 flex items-center justify-center rounded-lg shrink-0">
-                                        <MapPin className="text-orange-500" size={24} />
+                                <div className="bg-orange-50/50 border border-orange-100 p-3 md:p-4 rounded-xl flex items-center gap-3 md:gap-4">
+                                    <div className="bg-orange-100 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg shrink-0">
+                                        <MapPin className="text-orange-500" size={20} />
                                     </div>
-                                    <div>
-                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">Konum</p>
-                                        <p className="text-sm font-bold text-(--color-lumex-dark)">{selectedEvent.location}</p>
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">Konum</p>
+                                        <p className="text-xs md:text-sm font-bold text-(--color-lumex-dark) truncate">{selectedEvent.location}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-xl flex items-center gap-4 mb-6">
-                                <div className="bg-emerald-100 w-12 h-12 flex items-center justify-center rounded-lg shrink-0">
-                                    <Users className="text-emerald-600" size={24} />
+                            <div className="bg-emerald-50/50 border border-emerald-100 p-3 md:p-4 rounded-xl flex items-center gap-3 md:gap-4 mb-5 md:mb-6">
+                                <div className="bg-emerald-100 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg shrink-0">
+                                    <Users className="text-emerald-600" size={20} />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">Katılımcılar</p>
-                                    <p className="text-sm font-bold text-(--color-lumex-dark)">{selectedEvent.participant_count} Kişi Katılıyor</p>
+                                    <p className="text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">Katılımcılar</p>
+                                    <p className="text-xs md:text-sm font-bold text-(--color-lumex-dark)">{selectedEvent.participant_count} Kişi Katılıyor</p>
                                 </div>
                             </div>
 
-                            <div className="mb-8">
-                                <h3 className="flex items-center gap-2 font-bold text-(--color-lumex-dark) mb-3 text-lg">
-                                    <Clock className="text-(--color-lumex-purple-main)" size={20} /> Etkinlik Hakkında
+                            <div className="mb-6 md:mb-8">
+                                <h3 className="flex items-center gap-1.5 md:gap-2 font-bold text-(--color-lumex-dark) mb-2 md:mb-3 text-base md:text-lg">
+                                    <Clock className="text-(--color-lumex-purple-main) md:w-5 md:h-5" size={18} /> Etkinlik Hakkında
                                 </h3>
-                                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                    <p className="text-sm leading-relaxed text-(--color-lumex-dark-muted)">
+                                <div className="bg-gray-50 p-3 md:p-4 rounded-xl border border-gray-100">
+                                    <p className="text-xs md:text-sm leading-relaxed text-(--color-lumex-dark-muted) whitespace-pre-wrap">
                                         {selectedEvent.description || "Bu etkinlik için açıklama girilmemiş."}
                                     </p>
                                 </div>
                             </div>
 
-                            {/* AKSİYON BUTONLARI */}
-                            <div className="flex flex-wrap md:flex-nowrap gap-3 pt-4 border-t border-gray-100">
+                            <div className="flex flex-col sm:flex-row gap-2 md:gap-3 pt-4 border-t border-gray-100 mt-auto shrink-0">
                                 {selectedEvent.is_joined ? (
-                                    <button disabled className="flex-1 cursor-not-allowed flex items-center justify-center gap-2 font-semibold rounded-xl bg-emerald-500 text-white text-sm py-3.5 shadow-sm opacity-90">
-                                        <CheckCircle2 size={18} /> Katıldınız
+                                    <button disabled className="w-full sm:flex-1 cursor-not-allowed flex items-center justify-center gap-2 font-semibold rounded-lg md:rounded-xl bg-emerald-500 text-white text-xs md:text-sm py-2.5 md:py-3.5 shadow-sm opacity-90">
+                                        <CheckCircle2 size={16} className="md:w-[18px] md:h-[18px]" /> Katıldınız
                                     </button>
                                 ) : (
-                                    <button onClick={handleJoin} className="flex-1 cursor-pointer flex items-center justify-center gap-2 font-semibold rounded-xl bg-(--color-lumex-dark) hover:bg-black text-white text-sm py-3.5 shadow-md transition-colors">
-                                        <Users size={18} /> Etkinliğe Katıl
+                                    <button onClick={handleJoin} className="w-full sm:flex-1 cursor-pointer flex items-center justify-center gap-2 font-semibold rounded-lg md:rounded-xl bg-(--color-lumex-dark) hover:bg-black text-white text-xs md:text-sm py-2.5 md:py-3.5 shadow-md transition-colors">
+                                        <Users size={16} className="md:w-[18px] md:h-[18px]" /> Etkinliğe Katıl
                                     </button>
                                 )}
                                 
-                                <button className="flex-1 md:flex-none cursor-pointer flex items-center justify-center gap-2 font-semibold rounded-xl bg-white border border-gray-200 text-(--color-lumex-dark) text-sm py-3.5 px-6 hover:bg-gray-50 transition-colors shadow-sm">
-                                    <Bell size={18} /> Hatırlat
-                                </button>
-                                <button onClick={handleShare} className="flex-1 md:flex-none cursor-pointer flex items-center justify-center gap-2 font-semibold rounded-xl bg-white border border-gray-200 text-(--color-lumex-dark) text-sm py-3.5 px-6 hover:bg-gray-50 transition-colors shadow-sm">
-                                    <Share2 size={18} /> Paylaş
-                                </button>
+                                <div className="flex w-full sm:w-auto gap-2 md:gap-3">
+                                    <button className="flex-1 sm:flex-none cursor-pointer flex items-center justify-center gap-1.5 md:gap-2 font-semibold rounded-lg md:rounded-xl bg-white border border-gray-200 text-(--color-lumex-dark) text-xs md:text-sm py-2.5 md:py-3.5 px-4 md:px-6 hover:bg-gray-50 transition-colors shadow-sm">
+                                        <Bell size={16} className="md:w-[18px] md:h-[18px]" /> Hatırlat
+                                    </button>
+                                    <button onClick={handleShare} className="flex-1 sm:flex-none cursor-pointer flex items-center justify-center gap-1.5 md:gap-2 font-semibold rounded-lg md:rounded-xl bg-white border border-gray-200 text-(--color-lumex-dark) text-xs md:text-sm py-2.5 md:py-3.5 px-4 md:px-6 hover:bg-gray-50 transition-colors shadow-sm">
+                                        <Share2 size={16} className="md:w-[18px] md:h-[18px]" /> Paylaş
+                                    </button>
+                                </div>
                             </div>
 
                         </div>

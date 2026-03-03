@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Users, ChevronRight, ShieldCheck } from "lucide-react";
 
-// Gelen veri tipi
 interface Community {
     id: number;
     name: string;
@@ -32,7 +31,7 @@ const MyCommunities = () => {
                         }
                     }
                 } catch (error) {
-                    console.error("Topluluk verileri alınamadı:", error);
+                    console.error(error);
                 }
             }
             setLoading(false);
@@ -41,27 +40,24 @@ const MyCommunities = () => {
         fetchCommunities();
     }, []);
 
-    // Veritabanından gelen tarihi (Örn: 2025-10-12) Türkçe okunabilir hale çevirir
     const formatDate = (dateString: string) => {
         if (!dateString) return "";
         const date = new Date(dateString);
-        return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+        return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
     };
 
     return (
-        <div className="w-full bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-105">
-            {/* Üst Kısım (Sabit) */}
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between shrink-0">
+        <div className="w-full bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-96 md:h-105">
+            <div className="p-4 md:p-6 border-b border-gray-100 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                    <Users size={20} className="text-(--color-lumex-purple-main)" />
-                    <h2 className="text-lg font-bold text-(--color-lumex-dark)">Üyesi Olduğum Topluluklar</h2>
+                    <Users size={18} className="text-(--color-lumex-purple-main) md:w-5 md:h-5" />
+                    <h2 className="text-base md:text-lg font-bold text-(--color-lumex-dark)">Üyesi Olduğum Topluluklar</h2>
                 </div>
-                <span className="bg-(--color-lumex-purple-light)/20 text-(--color-lumex-purple-main) text-xs font-bold px-3 py-1 rounded-full">
+                <span className="bg-(--color-lumex-purple-light)/20 text-(--color-lumex-purple-main) text-[10px] md:text-xs font-bold px-2 md:px-3 py-1 rounded-full">
                     {communities.length} Topluluk
                 </span>
             </div>
 
-            {/* Liste Kısmı (İçi Scroll Olur) */}
             <div className="p-2 flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
                 {loading ? (
                     <div className="flex items-center justify-center h-full">
@@ -70,34 +66,33 @@ const MyCommunities = () => {
                 ) : communities.length > 0 ? (
                     <div className="flex flex-col gap-1">
                         {communities.map((community) => (
-                            <div key={community.id} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors group cursor-pointer border border-transparent hover:border-gray-100">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-(--color-lumex-purple-light)/10 text-(--color-lumex-purple-main) flex items-center justify-center font-bold text-sm shrink-0">
+                            <div key={community.id} className="flex items-center justify-between p-3 md:p-4 hover:bg-gray-50 rounded-lg transition-colors group cursor-pointer border border-transparent hover:border-gray-100">
+                                <div className="flex items-center gap-3 md:gap-4 min-w-0 pr-2">
+                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-(--color-lumex-purple-light)/10 text-(--color-lumex-purple-main) flex items-center justify-center font-bold text-xs md:text-sm shrink-0">
                                         {community.name.substring(0, 2).toUpperCase()}
                                     </div>
-                                    <div className="flex flex-col">
-                                        <p className="font-semibold text-sm text-(--color-lumex-dark)">{community.name}</p>
-                                        <div className="flex items-center gap-2 mt-0.5">
-                                            {/* Eğer rol "Üye" veya "Normal Üye" değilse (Yani yönetim kurulundaysa) yeşil rozet/ikon gösterir */}
+                                    <div className="flex flex-col min-w-0">
+                                        <p className="font-semibold text-xs md:text-sm text-(--color-lumex-dark) truncate">{community.name}</p>
+                                        <div className="flex items-center gap-1.5 md:gap-2 mt-0.5 md:mt-1">
                                             {community.role !== "Üye" && community.role !== "Normal Üye" && (
-                                                <ShieldCheck size={12} className="text-emerald-500" />
+                                                <ShieldCheck size={10} className="text-emerald-500 md:w-3 md:h-3" />
                                             )}
-                                            <p className={`text-xs font-medium ${(community.role !== "Üye" && community.role !== "Normal Üye") ? "text-emerald-600" : "text-(--color-lumex-dark-muted)"}`}>
+                                            <p className={`text-[10px] md:text-xs font-medium truncate ${(community.role !== "Üye" && community.role !== "Normal Üye") ? "text-emerald-600" : "text-(--color-lumex-dark-muted)"}`}>
                                                 {community.role}
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <p className="text-xs text-gray-400 hidden sm:block">{formatDate(community.joinedAt)}</p>
-                                    <ChevronRight size={16} className="text-gray-300 group-hover:text-(--color-lumex-purple-main) transition-colors" />
+                                <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                                    <p className="text-[10px] md:text-xs text-gray-400 hidden sm:block">{formatDate(community.joinedAt)}</p>
+                                    <ChevronRight size={14} className="text-gray-300 group-hover:text-(--color-lumex-purple-main) transition-colors md:w-4 md:h-4" />
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                        <p className="text-(--color-lumex-dark-muted) text-sm">Henüz hiçbir topluluğa üye değilsiniz.</p>
+                        <p className="text-(--color-lumex-dark-muted) text-xs md:text-sm">Henüz hiçbir topluluğa üye değilsiniz.</p>
                     </div>
                 )}
             </div>

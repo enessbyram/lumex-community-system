@@ -27,7 +27,7 @@ const Slider = () => {
                     setSlides(result.data);
                 }
             } catch (error) {
-                console.error("Slider fetch error:", error);
+                console.error(error);
             }
         };
 
@@ -70,8 +70,8 @@ const Slider = () => {
     if (!slides || slides.length === 0) return null;
 
     return (
-        <div className="w-full bg-(--color-lumex-light) flex items-center justify-center py-8">
-            <div className="container relative w-full h-87.5 md:h-112.5 rounded-2xl overflow-hidden shadow-2xl group">
+        <div className="w-full bg-(--color-lumex-light) flex items-center justify-center py-4 md:py-8 px-4 md:px-6 lg:px-0">
+            <div className="container relative w-full h-75 sm:h-100 md:h-112.5 lg:h-112.5 rounded-xl md:rounded-2xl overflow-hidden shadow-xl md:shadow-2xl group">
                 
                 <Image 
                     src={slides[current].image_url} 
@@ -83,11 +83,11 @@ const Slider = () => {
                 
                 <div className="absolute inset-0 bg-linear-to-t from-(--color-lumex-dark)/90 via-(--color-lumex-dark)/30 to-transparent z-10 transition-all duration-500"></div>
                 
-                <div className="absolute flex flex-col text-(--color-lumex-light) bottom-8 md:bottom-12 left-8 md:left-16 z-20">
-                    <h1 className="font-bold text-3xl md:text-5xl mb-2 drop-shadow-lg">
+                <div className="absolute flex flex-col text-(--color-lumex-light) bottom-6 md:bottom-12 left-4 right-4 sm:left-8 md:left-16 sm:right-8 md:right-16 z-20">
+                    <h1 className="font-bold text-2xl sm:text-3xl md:text-5xl mb-1.5 md:mb-2 drop-shadow-lg line-clamp-2 md:line-clamp-none">
                         {slides[current].title}
                     </h1>
-                    <h3 className="font-medium text-base md:text-xl text-(--color-lumex-light)/90 drop-shadow-md">
+                    <h3 className="font-medium text-sm sm:text-base md:text-xl text-(--color-lumex-light)/90 drop-shadow-md line-clamp-2 md:line-clamp-none">
                         {slides[current].subtitle}
                     </h3>
                 </div>
@@ -96,27 +96,27 @@ const Slider = () => {
                     <>
                         <button 
                             onClick={prev} 
-                            className="absolute top-1/2 -translate-y-1/2 left-4 text-(--color-lumex-light) z-30 bg-(--color-lumex-dark)/40 p-3 rounded-full opacity-0 group-hover:opacity-100 hover:bg-(--color-lumex-accent) hover:text-(--color-lumex-dark) transition-all cursor-pointer shadow-lg backdrop-blur-sm" 
+                            className="absolute top-1/2 -translate-y-1/2 left-2 md:left-4 text-(--color-lumex-light) z-30 bg-(--color-lumex-dark)/40 p-2 md:p-3 rounded-full md:opacity-0 group-hover:opacity-100 hover:bg-(--color-lumex-accent) hover:text-(--color-lumex-dark) transition-all cursor-pointer shadow-lg backdrop-blur-sm" 
                         >
-                            <ChevronLeft size={24} />
+                            <ChevronLeft size={20} className="md:w-6 md:h-6" />
                         </button>
 
                         <button 
                             onClick={next} 
-                            className="absolute top-1/2 -translate-y-1/2 right-4 text-(--color-lumex-light) z-30 bg-(--color-lumex-dark)/40 p-3 rounded-full opacity-0 group-hover:opacity-100 hover:bg-(--color-lumex-accent) hover:text-(--color-lumex-dark) transition-all cursor-pointer shadow-lg backdrop-blur-sm" 
+                            className="absolute top-1/2 -translate-y-1/2 right-2 md:right-4 text-(--color-lumex-light) z-30 bg-(--color-lumex-dark)/40 p-2 md:p-3 rounded-full md:opacity-0 group-hover:opacity-100 hover:bg-(--color-lumex-accent) hover:text-(--color-lumex-dark) transition-all cursor-pointer shadow-lg backdrop-blur-sm" 
                         >
-                            <ChevronRight size={24} />
+                            <ChevronRight size={20} className="md:w-6 md:h-6" />
                         </button>
 
-                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-30">
+                        <div className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 md:gap-3 z-30">
                             {slides.map((_, i) => (
                                 <button
                                     key={i}
                                     onClick={() => goTo(i)}
-                                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer shadow-sm ${
+                                    className={`h-1.5 md:h-2 rounded-full transition-all duration-300 cursor-pointer shadow-sm ${
                                         i === current 
-                                        ? "bg-(--color-lumex-accent) w-8" 
-                                        : "bg-(--color-lumex-light)/50 w-2 hover:bg-(--color-lumex-light)/80"
+                                        ? "bg-(--color-lumex-accent) w-6 md:w-8" 
+                                        : "bg-(--color-lumex-light)/50 w-1.5 md:w-2 hover:bg-(--color-lumex-light)/80"
                                     }`}
                                     aria-label={`Go to slide ${i + 1}`}
                                 />
