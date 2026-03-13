@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 
+// VERCEL'İN VERİYİ HAFIZADA TUTMASINI (CACHE) ENGELLER. HER ZAMAN GÜNCEL VERİ ÇEKER!
+export const dynamic = 'force-dynamic';
+
 // 1. BEKLEYEN TALEPLERİ ÇEK (GET)
 export async function GET(req: Request) {
     try {
@@ -9,8 +12,14 @@ export async function GET(req: Request) {
 
         if (!userId) return NextResponse.json({ success: false, message: "Kullanıcı ID gerekli." }, { status: 400 });
 
-        // Hocanın topluluklarını bul
-        const [communities]: any = await pool.query(`SELECT c.id FROM communities c JOIN advisors a ON c.advisor_id = a.id WHERE a.user_id = ?`, [userId]);
+        // DOĞRU SORGUSU: Stats API'deki gibi advisors tablosu ile köprü kuruyoruz
+        const [communities]: any = await pool.query(`
+            SELECT c.id 
+            FROM communities c
+            JOIN advisors a ON c.advisor_id = a.id
+            WHERE a.user_id = ?
+        `, [userId]);
+
         if (communities.length === 0) return NextResponse.json({ success: true, data: [] });
 
         const communityIds = communities.map((c: any) => c.id);

@@ -12,14 +12,19 @@ export async function GET(req: Request) {
         }
 
         // 1. KONTROL: Bu adam zaten bu topluluğun üyesi mi? (Başkan vs. de bu tabloda yer alıyor)
+        // DİKKAT: Sadece id'yi değil, role_id'yi de çekiyoruz!
         const [memberCheck]: any = await pool.query(
-            `SELECT id FROM community_members WHERE user_id = ? AND community_id = ?`,
+            `SELECT id, role_id FROM community_members WHERE user_id = ? AND community_id = ?`,
             [userId, communityId]
         );
 
         if (memberCheck.length > 0) {
-            // Üyeyse status: 'member' dönüyoruz, frontend "Üyesiniz" rozeti basacak
-            return NextResponse.json({ success: true, status: "member" });
+            // Üyeyse status: 'member' ve ayrılma butonu kontrolü için role_id dönüyoruz
+            return NextResponse.json({ 
+                success: true, 
+                status: "member", 
+                role_id: memberCheck[0].role_id 
+            });
         }
 
         // 2. KONTROL: Üye değilse, bekleyen başvurusu var mı?
@@ -29,12 +34,12 @@ export async function GET(req: Request) {
         );
 
         if (requestCheck.length > 0) {
-            // Başvurusu varsa status: 'pending' dönüyoruz, frontend "Başvuru Bekliyor" rozeti basacak
-            return NextResponse.json({ success: true, status: "pending" });
+            // Başvurusu varsa status: 'pending' dönüyoruz
+            return NextResponse.json({ success: true, status: "pending", role_id: null });
         }
 
         // 3. Hiçbiri yoksa demek ki henüz başvurmamış
-        return NextResponse.json({ success: true, status: "none" });
+        return NextResponse.json({ success: true, status: "none", role_id: null });
 
     } catch (error: any) {
         console.error("Community Status API Hata:", error.message);

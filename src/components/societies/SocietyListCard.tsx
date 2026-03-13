@@ -8,6 +8,7 @@ import {
   Check,
   Clock,
   List,
+  LogOut // LogOut ikonu eklendi
 } from "lucide-react";
 import SocietyMembersPopup from "./SocietyMembersPopup";
 
@@ -33,6 +34,7 @@ const SocietyListCard = ({
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [status, setStatus] = useState("none");
+  const [memberRoleId, setMemberRoleId] = useState<number | null>(null); // Rol state'i eklendi
   const [showMembersPopup, setShowMembersPopup] = useState(false);
 
   useEffect(() => {
@@ -50,7 +52,10 @@ const SocietyListCard = ({
           fetch(`/api/community-status?user_id=${userId}&community_id=${id}`)
             .then((res) => res.json())
             .then((data) => {
-              if (data.success) setStatus(data.status);
+              if (data.success) {
+                setStatus(data.status);
+                setMemberRoleId(data.role_id); // Gelen rolü kaydet
+              }
             })
             .catch((err) => console.error("Durum çekme hatası:", err));
         }
@@ -75,6 +80,31 @@ const SocietyListCard = ({
         alert(data.message || "Başvurunuz başarıyla alındı.");
       } else {
         alert(data.message || "Başvuru sırasında bir hata oluştu.");
+      }
+    } catch (err) {
+      alert("Sunucuya bağlanırken bir hata oluştu.");
+    }
+  };
+
+  const handleLeave = async () => {
+    if (!confirm("Bu topluluktan ayrılmak istediğinize emin misiniz?")) return;
+    if (!user) return;
+    
+    const userId = user.user_id || user.id;
+    try {
+      const res = await fetch("/api/leave-community", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, community_id: id }),
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        setStatus("none");
+        setMemberRoleId(null);
+        alert(data.message || "Topluluktan başarıyla ayrıldınız.");
+      } else {
+        alert(data.message || "Ayrılma işlemi başarısız oldu.");
       }
     } catch (err) {
       alert("Sunucuya bağlanırken bir hata oluştu.");
@@ -238,8 +268,21 @@ const SocietyListCard = ({
                     </div>
                   )}
                   {status === "member" && (
-                    <div className="w-full flex justify-center items-center gap-2 px-4 py-2.5 md:py-2 bg-green-50 text-green-700 text-xs md:text-sm font-bold rounded-lg border border-green-200/50">
-                      <Check size={16} className="md:w-4 md:h-4" /> Üyesiniz
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 flex justify-center items-center gap-1.5 px-4 py-2.5 md:py-2 bg-green-50 text-green-700 text-xs md:text-sm font-bold rounded-lg border border-green-200/50">
+                        <Check size={16} className="md:w-4 md:h-4" /> Üyesiniz
+                      </div>
+                      
+                      {/* SADECE ROL 11 İSE GÖSTERİLİR */}
+                      {memberRoleId === 11 && (
+                        <button
+                          onClick={handleLeave}
+                          title="Topluluktan Ayrıl"
+                          className="flex-none flex justify-center items-center gap-1.5 px-4 py-2.5 md:py-2 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white transition-colors text-xs md:text-sm font-bold rounded-lg border border-red-200/50 shadow-sm cursor-pointer"
+                        >
+                          <LogOut size={16} className="md:w-4 md:h-4" /> Ayrıl
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
